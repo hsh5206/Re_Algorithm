@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Player.h"
 #include "Board.h"
+#include <stack>
 
 void Player::Init(Board* board)
 {
@@ -42,6 +43,28 @@ void Player::Init(Board* board)
 			_dir = (_dir + 1) % DIR_COUNT;
 		}
 	}
+
+	// 스택을 이용한 path 단축
+	stack<Pos> s;
+	for (int i = 0; i < _path.size() - 1; i++)
+	{
+		if (s.empty() == false && s.top() == _path[i + 1])
+			s.pop();
+		else
+			s.push(_path[i]);
+	}
+	if (_path.empty() == false)
+		s.push(_path.back());
+
+	vector<Pos> path;
+	while (s.empty() == false)
+	{
+		path.push_back(s.top());
+		s.pop();
+	}
+
+	std::reverse(path.begin(), path.end());
+	_path = path;
 }
 
 void Player::Update(uint64 deltaTick)
