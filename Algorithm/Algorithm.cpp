@@ -5,6 +5,7 @@ using namespace std;
 #include <list>
 #include <stack>
 #include <queue>
+#include <deque>
 
 #pragma region 선형 자료구조
 /** 동적 배열 */
@@ -177,6 +178,192 @@ private:
 
 #pragma endregion
 
+#pragma region 그래프
+void CreateGraph_1()
+{
+	// 정점이 연결 유무를 관리
+	struct Vertex
+	{
+		vector<Vertex*> edges;
+	};
+
+	vector<Vertex> v;
+	v.resize(6);
+
+	v[0].edges.push_back(&v[1]);
+	v[0].edges.push_back(&v[3]);
+	v[1].edges.push_back(&v[0]);
+	v[1].edges.push_back(&v[2]);
+	v[1].edges.push_back(&v[3]);
+	v[3].edges.push_back(&v[4]);
+	v[5].edges.push_back(&v[4]);
+}
+void CreateGraph_2()
+{
+	// 연결 목록을 따로 관리
+
+	// 1
+	vector<vector<int>> adjacent1(6);
+	adjacent1[0] = { 1, 3 };
+	adjacent1[1] = { 0, 2, 3 };
+	adjacent1[3] = { 4 };
+	adjacent1[5] = { 4 };
+
+	// 2
+	// [0][1][0][1][0][0]
+	// [1][0][1][1][0][0]
+	// [0][0][0][0][0][0]
+	// [0][0][0][0][1][0]
+	// [0][0][0][0][0][0]
+	// [0][0][0][0][1][0]
+	vector<vector<bool>> adjacent2(6, vector<bool>(6, false));
+	adjacent2[0][1] = true;
+	adjacent2[0][3] = true;
+	adjacent2[1][0] = true;
+	adjacent2[1][2] = true;
+	adjacent2[1][3] = true;
+	adjacent2[3][4] = true;
+	adjacent2[5][4] = true;
+	// 가중치 : bool값 => 가중치
+}
+
+vector<bool> visited(6, false);
+vector<vector<int>> adjList;
+vector<vector<int>> adjMatrix;
+vector<vector<int>> adjMatrix_Dikjstra;
+
+void ResetGraph()
+{
+	adjList = vector<vector<int>>(6);
+	adjList[0].push_back(1);
+	adjList[0].push_back(3);
+	adjList[1].push_back(0);
+	adjList[1].push_back(2);
+	adjList[1].push_back(3);
+	adjList[3].push_back(4);
+	adjList[5].push_back(4);
+
+	adjMatrix = vector<vector<int>>
+	{
+		{0, 1, 0, 1, 0, 0},
+		{1, 0, 1, 1, 0, 0},
+		{0, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 1, 0},
+		{0, 0, 0, 0, 0, 0},
+		{0, 0, 0, 0, 1, 0}
+	};
+
+	adjMatrix_Dikjstra = vector<vector<int>>(6, vector<int>(6, -1));
+	adjMatrix_Dikjstra[0][1] = 15;
+	adjMatrix_Dikjstra[0][3] = 35;
+	adjMatrix_Dikjstra[1][0] = 15;
+	adjMatrix_Dikjstra[1][2] = 5;
+	adjMatrix_Dikjstra[1][3] = 10;
+	adjMatrix_Dikjstra[3][4] = 5;
+	adjMatrix_Dikjstra[5][4] = 5;
+
+	visited = vector<bool>(6, false);
+}
+
+void DFS(int here)
+{
+	visited[here] = true;
+	cout << "Visited : " << here << endl;
+
+	// 인접리스트 버전
+	/*for (int i = 0; i < adjList[here].size(); i++)
+	{
+		int there = adjList[here][i];
+		if (!visited[there])
+			DFS(there);
+	}*/
+
+	// 인접행렬  버전
+	for (int there = 0; there < 6; there++)
+	{
+		if (adjMatrix[here][there] == 0)
+			continue;
+
+		if (visited[there] == false)
+			DFS(there);
+	}
+}
+
+void BFS(int here)
+{
+	queue<int> q;
+	q.push(here);
+	visited[here] = true;
+
+	while (q.empty() == false)
+	{
+		here = q.front();
+		q.pop();
+
+		cout << "Visited : " << here << endl;
+		for (int i = 0; i < adjList[here].size(); i++)
+		{
+			if (visited[adjList[here][i]])
+				continue;
+			q.push(adjList[here][i]);
+			visited[adjList[here][i]] = true;
+		}
+	}
+}
+
+void Dijkstra(int here)
+{
+	struct VertexCost
+	{
+		int vertex;
+		int cost;
+	};
+	list<VertexCost> discovered;
+	vector<int> best(6, INT32_MAX);
+	vector<int> parent(6, -1);
+
+	discovered.push_back(VertexCost{ here, 0 });
+	best[here] = 0;
+	
+	// 우선순위 큐로 실행해야 함
+	while (discovered.empty() == false)
+	{
+		list<VertexCost>::iterator bestIt;
+		int bestCost = INT32_MAX;
+
+		for (auto it = discovered.begin(); it != discovered.end(); it++)
+		{
+			const int cost = it->cost;
+			if (cost < bestCost)
+			{
+				bestCost = cost;
+				bestIt = it;
+			}
+		}
+
+		int cost = bestIt->cost;
+		here = bestIt->vertex;
+		discovered.erase(bestIt);
+
+		if (best[here] < cost)
+			continue;
+
+		for (int there = 0; there < 6; there++)
+		{
+			if (adjMatrix_Dikjstra[here][there] == -1)
+				continue;
+			int nextCost = best[here] + adjMatrix_Dikjstra[here][there];
+			if (nextCost >= best[there])
+				continue;
+
+			discovered.push_back(VertexCost{ there, nextCost });
+			best[there] = nextCost;
+			parent[there] = here;
+		}
+	}
+}
+#pragma endregion
+
 int main()
 {
 #pragma region 선형 자료구조
@@ -263,7 +450,43 @@ int main()
 
 #pragma region 그래프
 	{
+		/** 그래프 
+		* 정점(Vertex), 간선(Edge)
+		* 기본 그래프
+		* 가중치 그래프
+		* 방향 그래프
+		*/
 
+		/** 표현
+		* 인접리스트
+		* 인접행렬
+		*/
+		
+
+		/** 그래프 탐색
+		* 깊이우선탐색(DFS)
+		* 너비우선탐색(BFS)
+		*/
+
+		/** DFS */
+		ResetGraph();
+		DFS(0);
+		cout << endl;
+
+		/** BFS */
+		ResetGraph();
+		BFS(0);
+		cout << endl;
+
+		/** 다익스트라 
+		* 한점에서 모든점으로의 최단거리
+		* 비용이 가장 낮은 애들 부터 방문
+		* 우선순위 큐 사용
+		*/
+		ResetGraph();
+		Dijkstra(0);
+
+		cout << "---------" << endl;
 	}
 #pragma endregion
 
