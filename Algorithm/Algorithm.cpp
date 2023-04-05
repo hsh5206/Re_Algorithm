@@ -699,6 +699,167 @@ private:
 };
 #pragma endregion
 
+#pragma region 정렬
+/** 버블 정렬 : O(N^2) */
+void BubbleSort(vector<int>& v)
+{
+	const int n = v.size();
+
+	for (int i = 0; i < n - 1; i++)
+	{
+		for (int j = 0; j < n - 1 - i; j++)
+		{
+			if (v[j] > v[j + 1])
+			{
+				int temp = v[j];
+				v[j] = v[j + 1];
+				v[j + 1] = temp;
+			}
+		}
+	}
+}
+
+/** 선택 정렬 : O(N^2) */
+void SelectionSort(vector<int>& v)
+{
+	const int n = v.size();
+	for (int i = 0; i < n - 1; i++)
+	{
+		int min = i;
+		for (int j = i + 1; j < n; j++)
+		{
+			if (v[j] < v[min])
+				min = j;
+		}
+
+		int temp = v[i];
+		v[i] = v[min];
+		v[min] = temp;
+	}
+}
+
+/** 삽입 정렬 : O(N^2) */
+void InsertionSort(vector<int>& v)
+{
+	const int n = v.size();
+	for (int i = 1; i < n; i++)
+	{
+		int data = v[i];
+		int j;
+		for (j = i-1; j >= 0; j--)
+		{
+			if (v[j] > data)
+				v[j + 1] = v[j];
+			else
+				break;
+		}
+		v[j + 1] = data;
+	}
+}
+
+/** 힙 정렬 : O(NlogN)*/
+void HeapSort(vector<int>& v)
+{
+	priority_queue<int, vector<int>, greater<int>> pq;
+
+	for (int num : v)
+		pq.push(num);
+
+	v.clear();
+
+	while (pq.empty() == false)
+	{
+		v.push_back(pq.top());
+		pq.pop();
+	}
+}
+
+/** 병합 정렬 : O(NlogN) */
+void MergeResult(vector<int>& v, int left, int mid, int right)
+{
+	vector<int> temp;
+	int leftIndex = left;
+	int rightIndex = mid + 1;
+
+	while (leftIndex <= mid && rightIndex <= right)
+	{
+		if (v[leftIndex] <= v[rightIndex])
+		{
+			temp.push_back(v[leftIndex]);
+			leftIndex++;
+		}
+		else
+		{
+			temp.push_back(v[rightIndex]);
+			rightIndex++;
+		}
+	}
+
+	if (leftIndex > mid)
+	{
+		while (rightIndex <= right)
+		{
+			temp.push_back(v[rightIndex]);
+			rightIndex++;
+		}
+	}
+	else
+	{
+		while (leftIndex <= mid)
+		{
+			temp.push_back(v[leftIndex]);
+			leftIndex++;
+		}
+	}
+
+	for (int i = 0; i < temp.size(); i++)
+		v[left + i] = temp[i];
+}
+void MergeSort(vector<int>& v, int left, int right)
+{
+	if (left >= right)
+		return;
+
+	int mid = (left + right) / 2;
+	MergeSort(v, left, mid);
+	MergeSort(v, mid + 1, right);
+
+	MergeResult(v, left, mid, right);
+}
+
+/** 퀵 정렬 : O(NlogN)~O(N^2) */
+int Partition(vector<int>& v, int left, int right)
+{
+	int pivot = v[left];
+	int low = left + 1;
+	int high = right;
+
+	while (low <= high)
+	{
+		while (low <= right && pivot >= v[low])
+			low++;
+		while (high >= left + 1 && pivot <= v[high])
+			high--;
+
+		if (low < high)
+			::swap(v[low], v[high]);
+	}
+
+	::swap(v[left], v[high]);
+
+	return high;
+}
+void QuickSort(vector<int>& v, int left, int right)
+{
+	if (left > right)
+		return;
+
+	int pivot = Partition(v, left, right);
+	QuickSort(v, left, pivot - 1);
+	QuickSort(v, pivot + 1, right);
+}
+#pragma endregion
+
 int main()
 {
 #pragma region 선형 자료구조
@@ -933,12 +1094,138 @@ int main()
 		* (4) Red 노드의 자식은 Black (Red의 연속X)
 		* (5) 각 노드로부터 - 리프까지 가는 경로들은 모두 같은 수의 Black
 		*/
+
+		cout << "---------" << endl;
 	}
 #pragma endregion
 
 #pragma region 정렬
+	// O(N^2)
 	{
+		/** 버블 정렬 */
+		vector<int> v(10);
+		srand(static_cast<unsigned>(time(nullptr)));
+		for (int i = 0; i < 10; i++)
+		{
+			v[i] = rand() % 100;
+		}
+		cout << "정렬 전  : ";
+		for (int i = 0; i < 10; i++)
+			cout << v[i] << " ";
 
+		BubbleSort(v);
+
+		cout << endl << "버블정렬 : ";
+		for (int i = 0; i < 10; i++)
+			cout << v[i] << " ";
+
+		cout << endl << "---------" << endl;
+
+		/** 선택 정렬 */
+		v = vector<int>(10);
+		srand(static_cast<unsigned>(time(nullptr)));
+		for (int i = 0; i < 10; i++)
+		{
+			v[i] = rand() % 100;
+		}
+		cout << "정렬 전  : ";
+		for (int i = 0; i < 10; i++)
+			cout << v[i] << " ";
+
+		SelectionSort(v);
+
+		cout << endl << "선택정렬 : ";
+		for (int i = 0; i < 10; i++)
+			cout << v[i] << " ";
+
+		cout << endl << "---------" << endl;
+
+		/** 삽입 정렬 */
+		v = vector<int>(10);
+		srand(static_cast<unsigned>(time(nullptr)));
+		for (int i = 0; i < 10; i++)
+		{
+			v[i] = rand() % 100;
+		}
+		cout << "정렬 전  : ";
+		for (int i = 0; i < 10; i++)
+			cout << v[i] << " ";
+
+		InsertionSort(v);
+
+		cout << endl << "삽입정렬 : ";
+		for (int i = 0; i < 10; i++)
+			cout << v[i] << " ";
+
+		cout << endl << "---------" << endl;
+	}
+
+	// O(NlogN)
+	{
+		/** 힙 정렬 */
+		vector<int> v(10);
+		srand(static_cast<unsigned>(time(nullptr)));
+		for (int i = 0; i < 10; i++)
+		{
+			v[i] = rand() % 100;
+		}
+		cout << "정렬 전 : ";
+		for (int i = 0; i < 10; i++)
+			cout << v[i] << " ";
+
+		HeapSort(v);
+
+		cout << endl << "힙 정렬 : ";
+		for (int i = 0; i < 10; i++)
+			cout << v[i] << " ";
+
+		cout << endl << "---------" << endl;
+
+		/** 병합 정렬 */
+		// 분할 정복
+		// - 분할	문제를 더 단순하게 분할
+		// - 정복	분할된 문제를 해결
+		// - 결합	결과를 취합하여 마무리
+		v = vector<int>(10);
+		srand(static_cast<unsigned>(time(nullptr)));
+		for (int i = 0; i < 10; i++)
+		{
+			v[i] = rand() % 100;
+		}
+		cout << "정렬 전  : ";
+		for (int i = 0; i < 10; i++)
+			cout << v[i] << " ";
+
+		MergeSort(v, 0, v.size() - 1);
+
+		cout << endl << "병합정렬 : ";
+		for (int i = 0; i < 10; i++)
+			cout << v[i] << " ";
+
+		cout << endl << "---------" << endl;
+	}
+
+	// O(NlogN) ~ O(N^2)
+	{
+		/** 퀵 정렬 */
+		// pivot을 기준점으로 분할정복
+		vector<int> v(10);
+		srand(static_cast<unsigned>(time(nullptr)));
+		for (int i = 0; i < 10; i++)
+		{
+			v[i] = rand() % 100;
+		}
+		cout << "정렬 전 : ";
+		for (int i = 0; i < 10; i++)
+			cout << v[i] << " ";
+
+		QuickSort(v, 0, v.size() - 1);
+
+		cout << endl << "퀵 정렬 : ";
+		for (int i = 0; i < 10; i++)
+			cout << v[i] << " ";
+
+		cout << endl << "---------" << endl;
 	}
 #pragma endregion
 
