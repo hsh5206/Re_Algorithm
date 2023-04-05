@@ -511,6 +511,194 @@ private:
 };
 #pragma endregion
 
+#pragma region 이진탐색 트리 & 레드블랙 트리
+/** 이진탐색 */
+vector<int> numbers(10);
+void BinarySearch(int N)
+{
+	int left = 0;
+	int right = numbers.size() - 1;
+
+	while (left <= right)
+	{
+		int mid = (left + right) / 2;
+
+		if (N < numbers[mid])
+		{
+			right = mid - 1;
+		}
+
+		else if (N < numbers[mid])
+		{
+			left = mid + 1;
+		}
+
+		else
+		{
+			cout << "Find!" << endl;
+			break;
+		}
+	}
+}
+
+/** 이진탐색 트리 */
+struct NodeBST
+{
+	NodeBST* parent = nullptr;
+	NodeBST* left = nullptr;
+	NodeBST* right = nullptr;
+	int key = {};
+};
+
+class BinarySearchTree
+{
+public:
+	void Print_InOrder() { Print_InOrder(_root); }
+	void Print_InOrder(NodeBST* node)
+	{
+		if (node == nullptr)
+			return;
+
+		// 전위 순회 (preorder)
+		// cout << node->key << endl;
+		// Print_InOrder(node->left);
+		// Print_InOrder(node->right);
+
+		// 중위 순회 (inorder)
+		// Print_InOrder(node->left);
+		// cout << node->key << endl;
+		// Print_InOrder(node->right);
+
+		// 후위 순회 (postorder)
+		// Print_InOrder(node->left);
+		// Print_InOrder(node->right);
+		// cout << node->key << endl;
+
+		cout << node->key << endl;
+		Print_InOrder(node->left);
+		Print_InOrder(node->right);
+	}
+
+	void Insert(int key)
+	{
+		NodeBST* newNode = new NodeBST();
+		newNode->key = key;
+
+		if (!_root)
+		{
+			_root = newNode;
+			return;
+		}
+
+		NodeBST* node = _root;
+		NodeBST* parent = nullptr;
+
+		while (node)
+		{
+			parent = node;
+			if (key < node->key)
+				node = node->left;
+			else
+				node = node->right;
+		}
+
+		newNode->parent = parent;
+		if (key < parent->key)
+			parent->left = newNode;
+		else
+			parent->right = newNode;
+	}
+	void Delete(int key)
+	{
+		NodeBST* deleteNode = Search(_root, key);
+		Delete(deleteNode);
+	}
+	void Delete(NodeBST* node)
+	{
+		if (node == nullptr)
+			return;
+
+		if (node->left == nullptr)
+			Replace(node, node->right);
+		else if (node->right == nullptr)
+			Replace(node, node->left);
+		else
+		{
+			NodeBST* next = Next(node);
+			node->key = next->key;
+			Delete(next);
+		}
+	}
+
+	void Replace(NodeBST* u, NodeBST* v)
+	{
+		if (u->parent == nullptr)
+			_root = v;
+		else if (u == u->parent->left)
+			u->parent->left = v;
+		else
+			u->parent->right = v;
+
+		if (v)
+			v->parent = u->parent;
+
+		delete u;
+	}
+
+	NodeBST* Search(NodeBST* node, int key)
+	{
+		if (node == nullptr || key == node->key)
+			return node;
+
+		if (key < node->key)
+			return Search(node->left, key);
+		else
+			return Search(node->right, key);
+	}
+	NodeBST* Search2(NodeBST* node, int key)
+	{
+		while (node && key != node->key)
+		{
+			if (key < node->key)
+				node = node->left;
+			else
+				node = node->right;
+		}
+		return node;
+	}
+
+	NodeBST* Min(NodeBST* node)
+	{
+		while (node->left)
+			node = node->left;
+
+		return node;
+	}
+	NodeBST* Max(NodeBST* node)
+	{
+		while (node->right)
+			node = node->right;
+
+		return node;
+	}
+	NodeBST* Next(NodeBST* node)
+	{
+		if (node->right)
+			return Min(node->right);
+		
+		NodeBST* parent = node->parent;
+		while (parent && node == parent->right)
+		{
+			node = parent;
+			parent = parent->parent;
+		}
+		return parent;
+	}
+private:
+	NodeBST* _root = nullptr;
+};
+#pragma endregion
+
 int main()
 {
 #pragma region 선형 자료구조
@@ -702,9 +890,49 @@ int main()
 	}
 #pragma endregion
 
-#pragma region 이진탐색 트리 & 레드 블랙 트리
+#pragma region 이진탐색 트리 & 레드블랙 트리
 	{
+		/** 이진 탐색
+		* 배열에 데이터가 정렬되어 있음
+		* log N의 시간 복잡도
+		*/
+		srand(static_cast<unsigned>(time(nullptr)));
+		for (int i = 0; i < 10; i++)
+		{
+			numbers[i] = rand() % 100;
+		}
+		int WantToFind = 34;
+		numbers[7] = WantToFind;
+		::sort(numbers.begin(), numbers.end());
+		for (int i = 0; i < 10; i++)
+			cout << numbers[i] << " ";
 
+		cout << endl << WantToFind << " : ";
+		BinarySearch(WantToFind);
+
+		cout << "---------" << endl;
+	}
+
+	{
+		/** 이진탐색 트리
+		* 이진탐색에서 데이터의 삽입삭제가 빈번할 경우 사용
+		*/
+		BinarySearchTree bst;
+		bst.Insert(10);
+		bst.Insert(20);
+		bst.Insert(30);
+		bst.Print_InOrder();
+	}
+
+	{
+		/** 레드블랙 트리
+		* 이진탐색 트리에서 left와 right의 균형을 유지하기 위함
+		* (1) 모든 노드들은 Red or Black
+		* (2) 루트는 Black
+		* (3) 리프(NIL)는 Black
+		* (4) Red 노드의 자식은 Black (Red의 연속X)
+		* (5) 각 노드로부터 - 리프까지 가는 경로들은 모두 같은 수의 Black
+		*/
 	}
 #pragma endregion
 
