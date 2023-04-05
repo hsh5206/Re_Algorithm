@@ -1231,7 +1231,16 @@ int main()
 
 #pragma region 해시 테이블
 	{
+		// map vs has_map (C++11 표준 unoredered_map)
+		// map : Red-black Tree
+		// - 추가/탐색/삭제 O(logN)
 
+		// has_map (unordered_map)
+		// - 추가/탐색/삭제 O(1)
+		// 메모리를 내주고 속도를 취함
+
+		// 큰 메모리에 키:값 쌍으로 저장
+		// 충돌문제 주의
 	}
 #pragma endregion
 
