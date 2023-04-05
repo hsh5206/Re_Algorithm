@@ -364,6 +364,153 @@ void Dijkstra(int here)
 }
 #pragma endregion
 
+#pragma region 트리 & 힙 & 우선순위 큐
+/** 트리 */
+using NodeRef = shared_ptr<struct Node>;
+struct Node
+{
+	Node() {}
+	Node(const string& data) :data(data) {}
+	string data;
+	vector<NodeRef> children;
+};
+
+NodeRef CreateTree()
+{
+	NodeRef root = make_shared<Node>("R1 개발실");
+	{
+		NodeRef node = make_shared<Node>("디자인팀");
+		root->children.push_back(node);
+		{
+			NodeRef leaf = make_shared<Node>("전투");
+			node->children.push_back(leaf);
+		}
+		{
+			NodeRef leaf = make_shared<Node>("경제");
+			node->children.push_back(leaf);
+		}
+		{
+			NodeRef leaf = make_shared<Node>("스토리");
+			node->children.push_back(leaf);
+		}
+
+		node = make_shared<Node>("프로그래밍팀");
+		root->children.push_back(node);
+		{
+			NodeRef leaf = make_shared<Node>("서브");
+			node->children.push_back(leaf);
+		}
+		{
+			NodeRef leaf = make_shared<Node>("클라");
+			node->children.push_back(leaf);
+		}
+		{
+			NodeRef leaf = make_shared<Node>("엔진");
+			node->children.push_back(leaf);
+		}
+
+		node = make_shared<Node>("아트팀");
+		root->children.push_back(node);
+		{
+			NodeRef leaf = make_shared<Node>("배경");
+			node->children.push_back(leaf);
+		}
+		{
+			NodeRef leaf = make_shared<Node>("캐릭터");
+			node->children.push_back(leaf);
+		}
+	}
+
+	return root;
+}
+void PrintTree(NodeRef root, int depth = 0)
+{
+	for (int i = 0; i < depth; i++)
+		cout << "-";
+	cout << root->data << endl;
+	for (NodeRef& child : root->children)
+		PrintTree(child, depth+1);
+}
+int GetHeight(NodeRef root)
+{
+	int height = 1;
+	for (NodeRef& child : root->children)
+	{
+		height = max(height, GetHeight(child) + 1);
+	}
+	return height;
+}
+
+/** 우선순위 큐 */
+template<typename T, typename Container = vector<T>, typename Predicate = less<T>>
+class PriorityQueue
+{
+public:
+	void push(const T& data)
+	{
+		_heap.push_back(data);
+
+		int now = static_cast<int>(_heap.size()) - 1;
+		while (now > 0)
+		{
+			// 부모와 비교
+			int parent = (now - 1) / 2;
+			/*if (_heap[now] < _heap[parent])
+				break;*/
+			if (_predicate(_heap[now], _heap[parent]))
+				break;
+
+			// 교체
+			::swap(_heap[now], _heap[parent]);
+			now = parent;
+		}
+	}
+
+	void pop()
+	{
+		_heap[0] = _heap.back();
+		_heap.pop_back();
+		
+		int now = 0;
+		while (true)
+		{
+			int left = now * 2 + 1;
+			int right = now * 2 + 2;
+			
+			if (left >= _heap.size())
+				break;
+
+			int next = now;
+			
+			if (_predicate(_heap[next], _heap[left]))
+				next = left;
+
+			if (right < _heap.size() && _predicate(_heap[next], _heap[right]))
+				next = right;
+
+			if (next == now)
+				break;
+			::swap(_heap[now], _heap[next]);
+			now = next;
+		}
+	}
+
+	T& top()
+	{
+		return _heap[0];
+	}
+
+	bool empty()
+	{
+		return _heap.empty();
+	}
+
+private:
+	Container _heap = {};
+	Predicate _predicate = {};
+};
+#pragma endregion
+
 int main()
 {
 #pragma region 선형 자료구조
@@ -490,9 +637,68 @@ int main()
 	}
 #pragma endregion
 
-#pragma region 힙 & 우선순위 큐
+#pragma region 트리 & 힙 & 우선순위 큐
 	{
+		/** 트리
+		* 노드와 간선으로 이루어진 계층구조
+		*/
+		{
+			NodeRef root = CreateTree();
+			PrintTree(root);
+			cout << "높이 : " << GetHeight(root) << endl;
+			cout << "---------" << endl;
+		}
 
+		/** 힙
+		* 부모노드는 항상 자식노드보다 큼
+		* 트리는 위, 왼쪽부터 채워나감
+		* < 배열로 표현가능 >
+		* i의 왼쪽자식 : [2*i +1]
+		* i의 오른쪽자식 : [2*i + 2]
+		* i의 부모 : [(i-1) / 2]
+		*/
+
+		/** 우선순위 큐
+		* 기본적으로 큰값
+		*/
+		{
+			// priority_queue<int> pq1;
+			priority_queue<int, vector<int>, greater<int>> pq1; // 작은 순서
+			pq1.push(100);
+			pq1.push(200);
+			pq1.push(300);
+			pq1.push(400);
+			pq1.push(500);
+			while (!pq1.empty())
+			{
+				int value = pq1.top();
+				pq1.pop();
+
+				cout << value << endl;
+			}
+			cout << endl;
+
+			PriorityQueue<int, vector<int>, greater<int>> pq2;
+			pq2.push(100);
+			pq2.push(200);
+			pq2.push(300);
+			pq2.push(400);
+			pq2.push(500);
+			while (!pq2.empty())
+			{
+				int value = pq2.top();
+				pq2.pop();
+
+				cout << value << endl;
+			}
+
+			cout << "---------" << endl;
+
+		}
+
+		/** A*알고리즘
+		* 길찾기 알고리즘
+		*/
 	}
 #pragma endregion
 

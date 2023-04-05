@@ -10,21 +10,26 @@ class Player
 	};
 
 public:
-	void Init(Board* board);
-	void Update(uint64 deltaTick);
+	void		Init(Board* board);
+	void		Update(uint64 deltaTick);
 
-	void SetPos(Pos pos) { _pos = pos; }
-	Pos GetPos() { return _pos; }
+	void		SetPos(Pos pos) { _pos = pos; }
+	Pos			GetPos() { return _pos; }
 
-	bool CanGo(Pos pos);
+	bool		CanGo(Pos pos);
 
 private:
-	Pos _pos = {};
-	int32 _dir = DIR_UP;
+	void		RightHand();
+	void		Bfs();
+	void		AStar();
+
+private:
+	Pos			_pos = {};
+	int32		_dir = DIR_UP;
 	Board* _board = nullptr;
 
-	vector<Pos> _path;
-	int32 _pathIndex = 0;
-	uint64 _sumTick = 0;
+	vector<Pos>	_path;
+	uint32		_pathIndex = 0;
+	uint64		_sumTick = 0;
 };
 
