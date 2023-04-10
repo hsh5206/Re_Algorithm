@@ -1245,14 +1245,23 @@ int main()
 #pragma endregion
 
 #pragma region 최소 스패닝 트리 (MST)
-	{
+	/** 상호 배타적 집합 (Disjoint Set) */
+	// Union-Find
+	// 연결 구조를 트리구조로
+	// Find : 부모를 타고 올라가서 최상위 부모를 찾음
+	// Merge : 두 집단을 합침 (최상위 부모를 하나로 일치)
+	// (높이가 높은 트리 아래 낮은 트리를 Merge하면 효율 상승)
 
-	}
+	/** MST */
+	// 싸이클 없이 최소비용으로 모든 정점을 연결하는 알고리즘
+	// 크루스칼 알고리즘 : 모든 간선 중 최소비용
+	// 프림 알고리즘 : 현재 인접한 간선 중 최소비용
+	
 #pragma endregion
 
 #pragma region 동적 계획법 (DP)
 	{
-
+		/** 여러 예제 풀어보기 */
 	}
 #pragma endregion
 }
