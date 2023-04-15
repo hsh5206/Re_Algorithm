@@ -2,6 +2,21 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="Algorithm_Solved.cpp" />
+    <ClCompile Include="BOJ_1065_한수.cpp">
+      <Filter>BOJ</Filter>
+    </ClCompile>
+    <ClCompile Include="BOJ_1316_그룹 단어 체커.cpp">
+      <Filter>BOJ</Filter>
+    </ClCompile>
+    <ClCompile Include="BOJ_9012_괄호.cpp">
+      <Filter>BOJ</Filter>
+    </ClCompile>
+    <ClCompile Include="BOJ_1463_1로 만들기.cpp">
+      <Filter>BOJ</Filter>
+    </ClCompile>
+    <ClCompile Include="BOJ_2941_크로아티아 알파벳.cpp">
+      <Filter>BOJ</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="BOJ">
