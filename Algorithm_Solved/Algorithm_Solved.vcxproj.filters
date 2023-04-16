@@ -17,6 +17,15 @@
     <ClCompile Include="BOJ_2941_크로아티아 알파벳.cpp">
       <Filter>BOJ</Filter>
     </ClCompile>
+    <ClCompile Include="BOJ_11399_ATM.cpp">
+      <Filter>BOJ</Filter>
+    </ClCompile>
+    <ClCompile Include="BOJ_11047_동전 0.cpp">
+      <Filter>BOJ</Filter>
+    </ClCompile>
+    <ClCompile Include="BOJ_9095_1, 2, 3 더하기.cpp">
+      <Filter>BOJ</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="BOJ">
